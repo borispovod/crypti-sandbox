@@ -5,8 +5,8 @@ var EventEmitter = require('events').EventEmitter,
 var callbacks = {};
 
 function onError(err) {
-	this.exit();
 	this.emit("error", err);
+	this.exit();
 }
 
 function listen(data) {
@@ -14,28 +14,28 @@ function listen(data) {
 	try {
 		var json = JSON.parse(data);
 	} catch (e) {
-		return this.private.onError(new Error("Can't parse JSON response from DApp: \n" + data)).bind(this);
+		return this.private.onError.call(this, new Error("Can't parse JSON response from DApp: \n" + data));
 	}
 
 	if (json.callback_id === null || json.callback_id === undefined) {
-		return this.private.onError(new Error("Incorrect response from vm, missed callback id field")).bind(this);
+		return this.private.onError.call(this, new Error("Incorrect response from vm, missed callback id field"));
 	}
 
 	try {
 		var callback_id = parseInt(json.callback_id);
 	} catch (e) {
-		return this.private.onError(new Error("Incorrect callback_id field, callback_id should be a number")).bind(this);
+		return this.private.onError.call(this, new Error("Incorrect callback_id field, callback_id should be a number"));
 	}
 
 	if (isNaN(callback_id)) {
-		return this.private.onError(new Error("Incorrect callback_id field, callback_id should be a number")).bind(this);
+		return this.private.onError.call(this, new Error("Incorrect callback_id field, callback_id should be a number"));
 	}
 
 	if (json.type == "dapp_response") {
 		var callback = callbacks[callback_id];
 
 		if (!callback) {
-			return this.private.onError(new Error("Crypti can't find callback_id from vm")).bind(this);
+			return this.private.onError.call(this, new Error("Crypti can't find callback_id from vm"));
 		}
 
 		var error = json.error;
@@ -57,7 +57,7 @@ function listen(data) {
 		var message = json.message;
 
 		if (message === null || message === undefined) {
-			return this.private.onError(new Error("Crypti can't find message for request from vm")).bind(this);
+			return this.private.onError.call(this, new Error("Crypti can't find message for request from vm"));
 		}
 
 		this.apiHandler(message, function (err, response) {
@@ -71,7 +71,7 @@ function listen(data) {
 			try {
 				var responseString = JSON.stringify(responseObj);
 			} catch (e) {
-				return this.private.onError(new Error("Can't make response: " + e.toString())).bind(this);
+				return this.private.onError.call(this, new Error("Can't make response: " + e.toString()));
 			}
 
 			this.child.stdio[3].write(responseString);
