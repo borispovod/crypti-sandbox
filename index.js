@@ -10,36 +10,32 @@ function onError(err) {
 }
 
 function listen(data) {
-	function error(err) {
-		this.exit();
-		this.emit("error", err);
-	};
-
+	var data = data.toString('utf8');
 	try {
 		var json = JSON.parse(data);
 	} catch (e) {
-		return error(new Error("Can't parse JSON response from DApp: \n" + data)).bind(this);
+		return this.private.onError(new Error("Can't parse JSON response from DApp: \n" + data)).bind(this);
 	}
 
 	if (json.callback_id === null || json.callback_id === undefined) {
-		return error(new Error("Incorrect response from vm, missed callback id field")).bind(this);
+		return this.private.onError(new Error("Incorrect response from vm, missed callback id field")).bind(this);
 	}
 
 	try {
 		var callback_id = parseInt(json.callback_id);
 	} catch (e) {
-		return error(new Error("Incorrect callback_id field, callback_id should be a number")).bind(this);
+		return this.private.onError(new Error("Incorrect callback_id field, callback_id should be a number")).bind(this);
 	}
 
 	if (isNaN(callback_id)) {
-		return error(new Error("Incorrect callback_id field, callback_id should be a number")).bind(this);
+		return this.private.onError(new Error("Incorrect callback_id field, callback_id should be a number")).bind(this);
 	}
 
 	if (json.type == "dapp_response") {
 		var callback = callbacks[callback_id];
 
 		if (!callback) {
-			return error(new Error("Crypti can't find callback_id from vm")).bind(this);
+			return this.private.onError(new Error("Crypti can't find callback_id from vm")).bind(this);
 		}
 
 		var error = json.error;
@@ -61,7 +57,7 @@ function listen(data) {
 		var message = json.message;
 
 		if (message === null || message === undefined) {
-			return error(new Error("Crypti can't find message for request from vm")).bind(this);
+			return this.private.onError(new Error("Crypti can't find message for request from vm")).bind(this);
 		}
 
 		this.apiHandler(message, function (err, response) {
@@ -75,7 +71,7 @@ function listen(data) {
 			try {
 				var responseString = JSON.stringify(responseObj);
 			} catch (e) {
-				return error(new Error("Can't make response: " + e.toString())).bind(this);
+				return this.private.onError(new Error("Can't make response: " + e.toString())).bind(this);
 			}
 
 			this.child.stdio[3].write(responseString);
