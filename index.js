@@ -77,9 +77,7 @@ function listen(data) {
 			this.child.stdio[3].write(responseString);
 		}.bind(this));
 	} else {
-		this.exit();
-		this.emit("error", new Error("Incorrect response type from vm"));
-		return;
+		this.private.onError.call(this, new Error("Incorrect response type from vm"));
 	}
 }
 
