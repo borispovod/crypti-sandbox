@@ -1,6 +1,6 @@
 var EventEmitter = require('events').EventEmitter,
 	util = require('util'),
-	spawn = require('child_process').spaw;
+	spawn = require('child_process').spawn;
 
 var callbacks = {};
 
