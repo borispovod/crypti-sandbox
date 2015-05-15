@@ -13,7 +13,8 @@ function Sandbox (file, apiHandler) {
 	}
 
 	if (typeof apiHandler !== "function" || apiHandler === undefined || apiHandler === null) {
-		throw new Error("Second argument should be a api hanlder callback");
+		throw new Error("Second ar" +
+		"gument should be a api hanlder callback");
 	}
 
 	this.file = file;
@@ -24,7 +25,7 @@ function Sandbox (file, apiHandler) {
 util.inherits(Sandbox, EventEmitter);
 
 Sandbox.prototype.run = function() {
-	this.child = spawn("./node/node", [this.file], {
+	this.child = spawn(path.join(__dirname, "./node/node"), [this.file], {
 		stdio: [ 'pipe', 'pipe', 'pipe', 'pipe',  'pipe' ]
 	});
 
@@ -81,6 +82,7 @@ Sandbox.prototype._onError = function(err) {
 }
 
 Sandbox.prototype._listen = function (data) {
+	var data = data.toString('utf8');
 	try {
 		var json = JSON.parse(data);
 	} catch (e) {
