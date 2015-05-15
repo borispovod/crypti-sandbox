@@ -5,13 +5,13 @@ var EventEmitter = require('events').EventEmitter,
 var callbacks = {};
 
 function onError(err) {
-	this.kill();
+	this.exit();
 	this.emit("error", err);
 }
 
 function listen(data) {
 	function error(err) {
-		this.kill();
+		this.exit();
 		this.emit("error", err);
 	};
 
@@ -81,7 +81,7 @@ function listen(data) {
 			this.child.stdio[3].write(responseString);
 		}.bind(this));
 	} else {
-		this.kill();
+		this.exit();
 		this.emit("error", new Error("Incorrect response type from vm"));
 		return;
 	}
