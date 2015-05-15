@@ -22,5 +22,9 @@
   "bugs": {
     "url": "https://github.com/crypti/crypti-sandbox/issues"
   },
-  "homepage": "https://github.com/crypti/crypti-sandbox"
+  "homepage": "https://github.com/crypti/crypti-sandbox",
+  "devDependencies": {
+    "mocha": "^2.2.5",
+    "should": "^6.0.1"
+  }
 }
