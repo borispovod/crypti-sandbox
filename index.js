@@ -81,36 +81,31 @@ Sandbox.prototype._onError = function(err) {
 }
 
 Sandbox.prototype._listen = function (data) {
-	function error(err) {
-		this.exit();
-		this.emit("error", err);
-	};
-
 	try {
 		var json = JSON.parse(data);
 	} catch (e) {
-		return error(new Error("Can't parse JSON response from DApp: \n" + data)).bind(this);
+		return this._onError(new Error("Can't parse JSON response from DApp: \n" + data));
 	}
 
 	if (json.callback_id === null || json.callback_id === undefined) {
-		return error(new Error("Incorrect response from vm, missed callback id field")).bind(this);
+		return this._onError(new Error("Incorrect response from vm, missed callback id field"));
 	}
 
 	try {
 		var callback_id = parseInt(json.callback_id);
 	} catch (e) {
-		return error(new Error("Incorrect callback_id field, callback_id should be a number")).bind(this);
+		return this._onError(new Error("Incorrect callback_id field, callback_id should be a number"));
 	}
 
 	if (isNaN(callback_id)) {
-		return error(new Error("Incorrect callback_id field, callback_id should be a number")).bind(this);
+		return this._onError(new Error("Incorrect callback_id field, callback_id should be a number"));
 	}
 
 	if (json.type == "dapp_response") {
 		var callback = callbacks[callback_id];
 
 		if (!callback) {
-			return error(new Error("Crypti can't find callback_id from vm")).bind(this);
+			return this._onError(new Error("Crypti can't find callback_id from vm"));
 		}
 
 		var error = json.error;
@@ -132,7 +127,7 @@ Sandbox.prototype._listen = function (data) {
 		var message = json.message;
 
 		if (message === null || message === undefined) {
-			return error(new Error("Crypti can't find message for request from vm")).bind(this);
+			return this._onError(new Error("Crypti can't find message for request from vm"));
 		}
 
 		this.apiHandler(message, function (err, response) {
@@ -146,15 +141,13 @@ Sandbox.prototype._listen = function (data) {
 			try {
 				var responseString = JSON.stringify(responseObj);
 			} catch (e) {
-				return error(new Error("Can't make response: " + e.toString())).bind(this);
+				return this._onError(new Error("Can't make response: " + e.toString()));
 			}
 
 			this.child.stdio[3].write(responseString);
 		}.bind(this));
 	} else {
-		this.exit();
-		this.emit("error", new Error("Incorrect response type from vm"));
-		return;
+		this._onError(new Error("Incorrect response type from vm"));
 	}
 }
 
