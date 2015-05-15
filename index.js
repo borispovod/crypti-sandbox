@@ -93,8 +93,7 @@ var private = {
 }
 
 var Sandbox = function (file, apiHandler) {
-	EventEmitter.call(this),
-	spawn = require('child_process').spawn;
+	EventEmitter.call(this);
 
 	if (typeof file !== "string" || file === undefined || file === null) {
 		throw new Error("First argument should be a path to file to launch in vm");
@@ -112,9 +111,9 @@ var Sandbox = function (file, apiHandler) {
 
 util.inherits(Sandbox, EventEmitter);
 
-Sandbox.prototype.run = function() {
-	this.child = spawn("./node/node", [this.file], {
-		stdio: [ 'pipe', 'pipe', 'pipe', 'pipe',  'pipe' ]
+Sandbox.prototype.run = function () {
+	this.child = spawn(__dirname + "/node/node", [this.file], {
+		stdio: ['pipe', 'pipe', 'pipe', 'pipe', 'pipe']
 	});
 
 	// catch errors...
