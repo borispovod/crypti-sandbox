@@ -38,6 +38,8 @@ Sandbox.prototype.run = function() {
 	this.child.stdio[4].on('error', this._onError.bind(this));
 
 	this.child.stdio[4].on('data', this._listen.bind(this));
+	this.child.stdio[0].on('data', this._debug.bind(this));
+	this.child.stdio[1].on('data', this._debug.bind(this));
 }
 
 Sandbox.prototype.setApi = function (apiHanlder) {
@@ -75,6 +77,10 @@ Sandbox.prototype.exit = function () {
 	}
 }
 
+Sandbox.prototype._debug = function (data) {
+	console.log("Debug " + this.file + ": \n");
+	console.log(data.toString('utf8'));
+}
 
 Sandbox.prototype._onError = function(err) {
 	this.exit();
