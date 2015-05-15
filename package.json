@@ -1,0 +1,26 @@
+{
+  "name": "crypti-sandbox",
+  "version": "1.0.0",
+  "description": "Crypti Sandbox",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:crypti/crypti-sandbox.git"
+  },
+  "keywords": [
+    "sandbox",
+    "crypti"
+  ],
+  "author": "Boris Povod <boris@crypti.me>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/crypti/crypti-sandbox/issues"
+  },
+  "homepage": "https://github.com/crypti/crypti-sandbox"
+}
