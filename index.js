@@ -5,7 +5,7 @@ var EventEmitter = require('events').EventEmitter,
 
 var callbacks = {};
 
-function Sandbox (file, apiHandler) {
+function Sandbox (file, apiHandler, debug) {
 	EventEmitter.call(this);
 
 	if (typeof file !== "string" || file === undefined || file === null) {
@@ -20,6 +20,7 @@ function Sandbox (file, apiHandler) {
 	this.file = file;
 	this.apiHandler = apiHandler;
 	this.child = null;
+	this.debug = debug || false;
 }
 
 util.inherits(Sandbox, EventEmitter);
@@ -38,8 +39,11 @@ Sandbox.prototype.run = function() {
 	this.child.stdio[4].on('error', this._onError.bind(this));
 
 	this.child.stdio[4].on('data', this._listen.bind(this));
-	this.child.stdio[0].on('data', this._debug.bind(this));
-	this.child.stdio[1].on('data', this._debug.bind(this));
+
+	if (this.debug) {
+		this.child.stdio[0].on('data', this._debug.bind(this));
+		this.child.stdio[2].on('data', this._debug.bind(this));
+	}
 }
 
 Sandbox.prototype.setApi = function (apiHanlder) {
