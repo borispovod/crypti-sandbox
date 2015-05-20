@@ -13,8 +13,7 @@ function Sandbox (file, apiHandler, debug) {
 	}
 
 	if (typeof apiHandler !== "function" || apiHandler === undefined || apiHandler === null) {
-		throw new Error("Second ar" +
-		"gument should be a api hanlder callback");
+		throw new Error("Second argument should be a api hanlder callback");
 	}
 
 	this.file = file;
