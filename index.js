@@ -5,18 +5,23 @@ var EventEmitter = require('events').EventEmitter,
 
 var callbacks = {};
 
-function Sandbox (file, apiHandler, debug) {
+function Sandbox (file, id, apiHandler, debug) {
 	EventEmitter.call(this);
 
 	if (typeof file !== "string" || file === undefined || file === null) {
 		throw new Error("First argument should be a path to file to launch in vm");
 	}
 
+	if (typeof id !== "string" || id === undefined || id === null) {
+		throw new Error("Second argument should be a id of dapp");
+	}
+
 	if (typeof apiHandler !== "function" || apiHandler === undefined || apiHandler === null) {
-		throw new Error("Second argument should be a api hanlder callback");
+		throw new Error("Third argument should be a api hanlder callback");
 	}
 
 	this.file = file;
+	this.id = id;
 	this.apiHandler = apiHandler;
 	this.child = null;
 	this.debug = debug || false;
@@ -142,7 +147,7 @@ Sandbox.prototype._listen = function (data) {
 			return this._onError(new Error("Crypti can't find message for request from vm"));
 		}
 
-		this.apiHandler(message, function (err, response) {
+		this.apiHandler(this.id, message, function (err, response) {
 			var responseObj = {
 				type: "crypti_response",
 				callback_id: callback_id,
