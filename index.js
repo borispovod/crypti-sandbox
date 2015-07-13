@@ -147,7 +147,9 @@ Sandbox.prototype._listen = function (data) {
 			return this._onError(new Error("Crypti can't find message for request from vm"));
 		}
 
-		this.apiHandler(this.id, message, function (err, response) {
+		message.dappid = this.id;
+
+		this.apiHandler(message, function (err, response) {
 			var responseObj = {
 				type: "crypti_response",
 				callback_id: callback_id,
