@@ -5,7 +5,7 @@ var EventEmitter = require('events').EventEmitter,
 
 var callbacks = {};
 
-function Sandbox (file, id, apiHandler, debug) {
+function Sandbox(file, id, apiHandler, debug) {
 	EventEmitter.call(this);
 
 	if (typeof file !== "string" || file === undefined || file === null) {
@@ -29,9 +29,9 @@ function Sandbox (file, id, apiHandler, debug) {
 
 util.inherits(Sandbox, EventEmitter);
 
-Sandbox.prototype.run = function() {
+Sandbox.prototype.run = function () {
 	this.child = spawn(path.join(__dirname, "./node/node"), [this.file], {
-		stdio: [ 'pipe', 'pipe', 'pipe', 'pipe',  'pipe' ]
+		stdio: ['pipe', 'pipe', 'pipe', 'pipe', 'pipe']
 	});
 
 	// catch errors...
@@ -91,13 +91,14 @@ Sandbox.prototype._debug = function (data) {
 	console.log(data.toString('utf8'));
 }
 
-Sandbox.prototype._onError = function(err) {
+Sandbox.prototype._onError = function (err) {
 	this.exit();
 	this.emit("error", err);
 }
 
-Sandbox.prototype._listen = function (data) {
-	var data = data.toString('utf8');
+Sandbox.prototype._listen = function (dataraw) {
+	var data = dataraw.toString('utf8');
+
 	try {
 		var json = JSON.parse(data);
 	} catch (e) {
