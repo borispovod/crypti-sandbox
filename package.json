@@ -9,6 +9,9 @@
   "scripts": {
     "test": "mocha"
   },
+  "dependencies": {
+    "async": "*"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:crypti/crypti-sandbox.git"

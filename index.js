@@ -1,7 +1,8 @@
 var EventEmitter = require('events').EventEmitter,
 	util = require('util'),
 	spawn = require('child_process').spawn,
-	path = require('path');
+	path = require('path'),
+	async = require('async');
 
 var callbacks = {};
 
@@ -24,81 +25,13 @@ function Sandbox(file, id, apiHandler, debug) {
 	this.id = id;
 	this.apiHandler = apiHandler;
 	this.child = null;
+	this.queue = null;
 	this.debug = debug || false;
 }
 
 util.inherits(Sandbox, EventEmitter);
 
-Sandbox.prototype.run = function () {
-	this.child = spawn(path.join(__dirname, "./node/node"), [this.file], {
-		stdio: ['pipe', 'pipe', 'pipe', 'pipe', 'pipe']
-	});
-
-	// catch errors...
-	this.child.on('error', this._onError.bind(this));
-	this.child.stdio[0].on('error', this._onError.bind(this));
-	this.child.stdio[1].on('error', this._onError.bind(this));
-	this.child.stdio[2].on('error', this._onError.bind(this));
-	this.child.stdio[3].on('error', this._onError.bind(this));
-	this.child.stdio[4].on('error', this._onError.bind(this));
-
-	this.child.stdio[4].on('data', this._listen.bind(this));
-
-	if (this.debug) {
-		this.child.stdio[0].on('data', this._debug.bind(this));
-	}
-
-	this.child.stdio[2].on('data', this._debug.bind(this));
-}
-
-Sandbox.prototype.setApi = function (apiHanlder) {
-	if (typeof apiHanlder != "function" || apiHanlder === null || apiHanlder === undefined) {
-		throw new Error("First argument should be a function");
-	}
-	this.apiHandler = apiHanlder;
-}
-
-
-Sandbox.prototype.sendMessage = function (message, callback) {
-	var callback_id = Object.keys(callbacks).length + 1;
-
-	var messageObj = {
-		callback_id: callback_id,
-		type: "crypti_call",
-		message: message
-	};
-
-	try {
-		var messageString = JSON.stringify(messageObj);
-	} catch (e) {
-		return setImmediate(callback, "Can't stringify message: " + e.toString());
-	}
-
-	this.child.stdio[3].write(messageString);
-
-	callbacks[callback_id] = callback;
-}
-
-Sandbox.prototype.exit = function () {
-	if (this.child) {
-		this.child.kill();
-		this.emit("exit");
-	}
-}
-
-Sandbox.prototype._debug = function (data) {
-	console.log("Debug " + this.file + ": \n");
-	console.log(data.toString('utf8'));
-}
-
-Sandbox.prototype._onError = function (err) {
-	this.exit();
-	this.emit("error", err);
-}
-
-Sandbox.prototype._listen = function (dataraw) {
-	var data = dataraw.toString('utf8');
-
+Sandbox.prototype._parse = function (data) {
 	try {
 		var json = JSON.parse(data);
 	} catch (e) {
@@ -164,11 +97,98 @@ Sandbox.prototype._listen = function (dataraw) {
 				return this._onError(new Error("Can't make response: " + e.toString()));
 			}
 
-			this.child.stdio[3].write(responseString);
+			this.queue.push({message: responseString});
+			//this.child.stdio[3].write(responseString);
 		}.bind(this));
 	} else {
 		this._onError(new Error("Incorrect response type from vm"));
 	}
+}
+
+
+Sandbox.prototype.run = function () {
+	this.child = spawn(path.join(__dirname, "./node/node"), [this.file], {
+		stdio: ['pipe', 'pipe', 'pipe', 'pipe', 'pipe']
+	});
+
+	var self = this;
+
+	this.queue = async.queue(function (task, callback) {
+		self.child.stdio[3].write(task.message);
+		process.nextTick(callback);
+	}, 1);
+
+	// catch errors...
+	this.child.on('error', this._onError.bind(this));
+	this.child.stdio[0].on('error', this._onError.bind(this));
+	this.child.stdio[1].on('error', this._onError.bind(this));
+	this.child.stdio[2].on('error', this._onError.bind(this));
+	this.child.stdio[3].on('error', this._onError.bind(this));
+	this.child.stdio[4].on('error', this._onError.bind(this));
+
+	this.child.stdio[4].on('data', this._listen.bind(this));
+
+	if (this.debug) {
+		this.child.stdio[0].on('data', this._debug.bind(this));
+	}
+
+	this.child.stdio[2].on('data', this._debug.bind(this));
+}
+
+Sandbox.prototype.setApi = function (apiHanlder) {
+	if (typeof apiHanlder != "function" || apiHanlder === null || apiHanlder === undefined) {
+		throw new Error("First argument should be a function");
+	}
+	this.apiHandler = apiHanlder;
+}
+
+
+Sandbox.prototype.sendMessage = function (message, callback) {
+	var callback_id = Object.keys(callbacks).length + 1;
+
+	var messageObj = {
+		callback_id: callback_id,
+		type: "crypti_call",
+		message: message
+	};
+
+	try {
+		var messageString = JSON.stringify(messageObj);
+	} catch (e) {
+		return setImmediate(callback, "Can't stringify message: " + e.toString());
+	}
+
+	this.queue.push({message: messageString});
+	//this.child.stdio[3].write(messageString);
+
+	callbacks[callback_id] = callback;
+}
+
+Sandbox.prototype.exit = function () {
+	if (this.child) {
+		this.child.kill();
+		this.emit("exit");
+	}
+}
+
+Sandbox.prototype._debug = function (data) {
+	console.log("Debug " + this.file + ": \n");
+	console.log(data.toString('utf8'));
+}
+
+Sandbox.prototype._onError = function (err) {
+	console.log(err.stack)
+	this.exit();
+	this.emit("error", err);
+}
+
+Sandbox.prototype._listen = function (dataraw) {
+	var data = dataraw.toString('utf8');
+	data = data.replace(/\}\{/g, "}====0===={").split("====0====");
+
+	data.forEach(function (jsonmessage) {
+		this._parse(jsonmessage);
+	}.bind(this));
 }
 
 module.exports = Sandbox;
