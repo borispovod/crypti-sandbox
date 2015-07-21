@@ -1,33 +1,34 @@
 {
-  "name": "crypti-sandbox",
-  "version": "1.0.0",
-  "description": "Crypti Sandbox",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "mocha"
-  },
-  "dependencies": {
-    "async": "*"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:crypti/crypti-sandbox.git"
-  },
-  "keywords": [
-    "sandbox",
-    "crypti"
-  ],
-  "author": "Boris Povod <boris@crypti.me>",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/crypti/crypti-sandbox/issues"
-  },
-  "homepage": "https://github.com/crypti/crypti-sandbox",
-  "devDependencies": {
-    "mocha": "^2.2.5",
-    "should": "^6.0.1"
-  }
+	"name": "crypti-sandbox",
+	"version": "1.0.0",
+	"description": "Crypti Sandbox",
+	"main": "index.js",
+	"directories": {
+		"test": "test"
+	},
+	"scripts": {
+		"test": "mocha"
+	},
+	"dependencies": {
+		"async": "*",
+		"longjohn": "*"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git@github.com:crypti/crypti-sandbox.git"
+	},
+	"keywords": [
+		"sandbox",
+		"crypti"
+	],
+	"author": "Boris Povod <boris@crypti.me>",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/crypti/crypti-sandbox/issues"
+	},
+	"homepage": "https://github.com/crypti/crypti-sandbox",
+	"devDependencies": {
+		"mocha": "^2.2.5",
+		"should": "^6.0.1"
+	}
 }

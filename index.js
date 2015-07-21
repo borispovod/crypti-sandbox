@@ -3,6 +3,7 @@ var EventEmitter = require('events').EventEmitter,
 	spawn = require('child_process').spawn,
 	path = require('path'),
 	async = require('async');
+require('longjohn');
 
 var callbacks = {};
 
@@ -115,7 +116,7 @@ Sandbox.prototype.run = function () {
 
 	this.queue = async.queue(function (task, callback) {
 		self.child.stdio[3].write(task.message);
-		process.nextTick(callback);
+		setTimeout(callback, 10);
 	}, 1);
 
 	// catch errors...
