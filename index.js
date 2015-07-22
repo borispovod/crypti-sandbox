@@ -130,7 +130,7 @@ Sandbox.prototype.run = function () {
 	this.child.stdio[4].on('data', this._listen.bind(this));
 
 	if (this.debug) {
-		this.child.stdio[0].on('data', this._debug.bind(this));
+		//this.child.stdio[0].on('data', this._debug.bind(this));
 		this.child.stdio[1].on('data', this._debug.bind(this));
 	}
 
