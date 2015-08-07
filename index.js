@@ -6,7 +6,7 @@ var EventEmitter = require('events').EventEmitter,
 
 var callbacks = {};
 
-function Sandbox(file, id, secret, apiHandler, debug) {
+function Sandbox(file, id, params, apiHandler, debug) {
 	EventEmitter.call(this);
 
 	if (typeof file !== "string" || file === undefined || file === null) {
@@ -21,7 +21,7 @@ function Sandbox(file, id, secret, apiHandler, debug) {
 		throw new Error("Third argument should be a api hanlder callback");
 	}
 
-	this.secret = secret;
+	this.params = params;
 	this.file = file;
 	this.id = id;
 	this.apiHandler = apiHandler;
@@ -108,7 +108,7 @@ Sandbox.prototype._parse = function (data) {
 
 
 Sandbox.prototype.run = function () {
-	this.child = spawn(path.join(__dirname, "./node/node"), [this.file, this.secret], {
+	this.child = spawn(path.join(__dirname, "./node/node"), [this.file].concat(this.params), {
 		stdio: ['pipe', 'pipe', 'pipe', 'pipe', 'pipe']
 	});
 
