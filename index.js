@@ -64,18 +64,18 @@ Sandbox.prototype._parse = function (data) {
 		var error = json.error;
 		var response = json.response;
 
-		if (util.isArray(response)) {
-			var args = [
-				callback,
-				error
-			];
-
-			args = args.concat(response);
-
-			setImmediate.apply(null, args);
-		} else {
+		//if (util.isArray(response)) {
+		//	var args = [
+		//		callback,
+		//		error
+		//	];
+		//
+		//	args = args.concat(response);
+		//
+		//	setImmediate.apply(null, args);
+		//} else {
 			setImmediate(callback, error, response);
-		}
+		//}
 	} else if (json.type == "dapp_call") {
 		var message = json.message;
 
@@ -193,7 +193,6 @@ Sandbox.prototype._onError = function (err) {
 Sandbox.prototype._listen = function (dataraw) {
 	var data = dataraw.toString('utf8');
 	data = data.replace(/\}\{/g, "}====0===={").split("====0====");
-
 	data.forEach(function (jsonmessage) {
 		this._parse(jsonmessage);
 	}.bind(this));
