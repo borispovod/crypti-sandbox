@@ -3,7 +3,7 @@ var EventEmitter = require('events').EventEmitter,
 	spawn = require('child_process').spawn,
 	path = require('path'),
 	async = require('async');
-require('longjohn')
+//require('longjohn');
 
 var callbacks = {};
 
