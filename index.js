@@ -74,7 +74,7 @@ Sandbox.prototype._parse = function (data) {
 		//
 		//	setImmediate.apply(null, args);
 		//} else {
-			setImmediate(callback, error, response);
+		setImmediate(callback, error, response);
 		//}
 	} else if (json.type == "dapp_call") {
 		var message = json.message;
@@ -118,7 +118,10 @@ Sandbox.prototype.run = function () {
 	this.queue = async.queue(function (task, callback) {
 		try {
 			//var chunk = Math.ceil(task.message.length / 16384);
-			console.log("outgoing " + (Buffer.byteLength(task.message, 'utf8')) + " bytes")
+			var size = Buffer.byteLength(task.message, 'utf8');
+			if (size > 16000) {
+				console.log("incoming " + (size) + " bytes");
+			}
 			self.child.stdio[3].write(task.message);
 		} catch (e) {
 			console.log(e.toString())
@@ -194,7 +197,10 @@ Sandbox.prototype._onError = function (err) {
 
 Sandbox.prototype._listen = function (dataraw) {
 	var data = dataraw.toString('utf8');
-	console.log("incoming " + (Buffer.byteLength(data, 'utf8')) + " bytes")
+	var size = Buffer.byteLength(data, 'utf8');
+	if (size > 16000) {
+		console.log("outgoing " + (size) + " bytes");
+	}
 	data = data.replace(/\}\{/g, "}====0===={").split("====0====");
 	data.forEach(function (jsonmessage) {
 		this._parse(jsonmessage);
