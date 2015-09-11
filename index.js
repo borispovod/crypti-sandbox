@@ -100,7 +100,7 @@ Sandbox.prototype._parse = function (data) {
 				return this._onError(new Error("Can't make response: " + e.toString()));
 			}
 
-			this.queue.push({message: responseString});
+			this.queue.push({message: responseString + magic});
 			//this.child.stdio[3].write(responseString);
 		}.bind(this));
 	} else {
@@ -198,17 +198,17 @@ Sandbox.prototype._onError = function (err) {
 
 Sandbox.prototype._listen = function (dataraw) {
 	var data = dataraw.toString('utf8');
-	if (data.lastIndexOf(magic) != (data.length - magic.length)) {
-		magicData += data;
-	} else {
-		magicData += data;
-		var parts = magicData.split(magic);
+	magicData += data;
+	if (data.substring(data.length - 11) == magic) {
+		var fullMessage = magicData;
+		magicData = "";
+
+		var parts = fullMessage.split(magic);
 		parts.pop();
 		parts.forEach(function (jsonmessage) {
 			this._parse(jsonmessage);
 		}.bind(this));
 
-		magicData = "";
 	}
 }
 
