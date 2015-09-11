@@ -75,7 +75,7 @@ Sandbox.prototype._parse = function (data) {
 		//
 		//	setImmediate.apply(null, args);
 		//} else {
-			setImmediate(callback, error, response);
+		setImmediate(callback, error, response);
 		//}
 	} else if (json.type == "dapp_call") {
 		var message = json.message;
@@ -118,6 +118,11 @@ Sandbox.prototype.run = function () {
 
 	this.queue = async.queue(function (task, callback) {
 		try {
+			//var chunk = Math.ceil(task.message.length / 16384);
+			var size = Buffer.byteLength(task.message, 'utf8');
+			if (size > 16000) {
+				console.log("incoming " + (size) + " bytes");
+			}
 			self.child.stdio[3].write(task.message);
 		} catch (e) {
 			console.log(e.toString())
