@@ -198,7 +198,7 @@ Sandbox.prototype._onError = function (err) {
 
 Sandbox.prototype._listen = function (dataraw) {
 	var data = dataraw.toString('utf8');
-	if (data.search(magic) != (data.length - magic)) {
+	if (data.search(magic) != (data.length - magic.length)) {
 		magicData += data;
 	} else {
 		magicData += data;
