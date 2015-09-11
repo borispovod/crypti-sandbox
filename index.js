@@ -3,9 +3,10 @@ var EventEmitter = require('events').EventEmitter,
 	spawn = require('child_process').spawn,
 	path = require('path'),
 	async = require('async');
-//require('longjohn');
 
 var callbacks = {};
+var magic = "=%5a$ng*a8=";
+var magicData = "";
 
 function Sandbox(file, id, params, apiHandler, debug) {
 	EventEmitter.call(this);
@@ -166,7 +167,7 @@ Sandbox.prototype.sendMessage = function (message, callback) {
 		return setImmediate(callback, "Can't stringify message: " + e.toString());
 	}
 
-	this.queue.push({message: messageString});
+	this.queue.push({message: messageString + magic});
 	//this.child.stdio[3].write(messageString);
 
 	callbacks[callback_id] = callback;
@@ -192,10 +193,17 @@ Sandbox.prototype._onError = function (err) {
 
 Sandbox.prototype._listen = function (dataraw) {
 	var data = dataraw.toString('utf8');
-	data = data.replace(/\}\{/g, "}====0===={").split("====0====");
-	data.forEach(function (jsonmessage) {
-		this._parse(jsonmessage);
-	}.bind(this));
+	if (data.search(magic) != (data.length - magic)) {
+		magicData += data;
+	} else {
+		magicData += data;
+		var parts = magicData.split(magic);
+		parts.forEach(function (jsonmessage) {
+			this._parse(jsonmessage);
+		}.bind(this));
+
+		magicData = "";
+	}
 }
 
 module.exports = Sandbox;
