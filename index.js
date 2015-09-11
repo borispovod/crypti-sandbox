@@ -198,11 +198,12 @@ Sandbox.prototype._onError = function (err) {
 
 Sandbox.prototype._listen = function (dataraw) {
 	var data = dataraw.toString('utf8');
-	if (data.search(magic) != (data.length - magic.length)) {
+	if (data.lastIndexOf(magic) != (data.length - magic.length)) {
 		magicData += data;
 	} else {
 		magicData += data;
 		var parts = magicData.split(magic);
+		parts.pop();
 		parts.forEach(function (jsonmessage) {
 			this._parse(jsonmessage);
 		}.bind(this));
