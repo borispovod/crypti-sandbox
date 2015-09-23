@@ -20,8 +20,8 @@
 		"sandbox",
 		"crypti"
 	],
-	"author": "Boris Povod <boris@crypti.me>",
-	"license": "ISC",
+	"author": "Boris Povod <boris@crypti.me>, Pavel Nekrasov <landgraf.paul@gmail.com>",
+	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/crypti/crypti-sandbox/issues"
 	},
