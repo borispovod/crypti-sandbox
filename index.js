@@ -38,7 +38,7 @@ Sandbox.prototype._parse = function (data) {
 	try {
 		var json = JSON.parse(data);
 	} catch (e) {
-		return this._onError(new Error("Can't parse JSON response from DApp: \n" + data));
+		return this._onError(new Error("Can't parse JSON response from DApp: \n" + data + "\n" + e.toString()));
 	}
 
 	if (json.callback_id === null || json.callback_id === undefined) {
