@@ -197,7 +197,7 @@ Sandbox.prototype._onError = function (err) {
 }
 
 Sandbox.prototype._listen = function (dataraw) {
-	var data = dataraw.toString('utf8');
+	var data = decodeURIComponent(dataraw.toString('utf8'));
 	magicData += data;
 	if (data.substring(data.length - 11) == magic) {
 		var fullMessage = magicData;
