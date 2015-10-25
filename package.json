@@ -1,6 +1,6 @@
 {
 	"name": "crypti-sandbox",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "Crypti Sandbox",
 	"main": "index.js",
 	"directories": {
