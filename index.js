@@ -110,7 +110,13 @@ Sandbox.prototype._parse = function (data) {
 
 
 Sandbox.prototype.run = function () {
-	this.child = spawn(path.join(__dirname, "../../nodejs/node"), [this.file].concat(this.params), {
+	if (process.env.DEBUG) {
+		var params = ['--debug', this.file].concat(this.params);
+	} else {
+		var params = [this.file].concat(this.params);
+	}
+
+	this.child = spawn(path.join(__dirname, "../../nodejs/node"), params, {
 		stdio: ['pipe', 'pipe', 'pipe', 'pipe', 'pipe']
 	});
 
