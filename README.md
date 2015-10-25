@@ -18,6 +18,15 @@ Crypti Sandbox that run sandboxed Nodejs.
 npm install crypti-sandbox
 ```
 
+## Debugging
+
+Run Crypti with next env variable:
+
+
+```sh
+DEBUG=1 node app.js
+```
+
 ## Contribution
 
 You are welcome! :)
